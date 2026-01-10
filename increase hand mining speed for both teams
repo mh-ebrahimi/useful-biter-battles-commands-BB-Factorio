@@ -1,0 +1,3 @@
+/sc for _, force in pairs({"north", "south"}) do
+    game.forces[force].manual_mining_speed_modifier=8000
+end
