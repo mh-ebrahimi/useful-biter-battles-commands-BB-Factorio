@@ -1,1 +1,6 @@
-/sc surface = game.player.surface chest = surface.create_entity({name = "wooden-chest", position = {0,-20}})  rendering.draw_text {                 text = "Special game MK2",                 surface = surface,                 target = chest,                 target_offset = {0, -2.5},                 color = {255, 255, 0},                 scale = 3.00,                 font = "heading-1",                 alignment = "center",                 scale_with_zoom = false         }
+/sc
+surface = game.player.surface chest = 
+surface.create_entity({name = "wooden-chest", position = {0,-20}})
+rendering.draw_text {text = "Special game MK2",
+surface = surface, target = chest, target_offset = {0, -2.5},
+color = {255, 255, 0}, scale = 3.00, font = "heading-1", alignment = "center", scale_with_zoom = false }
