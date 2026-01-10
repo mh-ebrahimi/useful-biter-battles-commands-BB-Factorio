@@ -1,0 +1,10 @@
+/sc
+for _, force in pairs({"north", "south"}) do
+	i=6
+--[[COMMENT: change(x) in i<x bellow to get to the desired level of infinite research]]
+	while i<15 do
+		game.forces[force].technologies['worker-robots-speed-6'].researched=true 
+		i=i+1
+        game.print("Special game [worker robot speed " .. i .. "]", {color = {r=0.3,g=1,b=0.1}})
+	end
+end
