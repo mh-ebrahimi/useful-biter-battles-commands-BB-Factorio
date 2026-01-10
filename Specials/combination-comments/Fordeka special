@@ -1,0 +1,109 @@
+/sc 
+  
+--[[COMMENT: unlocking research]]
+
+local surface = game.player.surface
+local bots_speed_end_level = 12
+
+for _, force_name in pairs({"north", "south"}) do
+local force = game.forces[force_name]
+
+force.manual_mining_speed_modifier = 5000;
+
+local technologies = {
+"worker-robots-speed-1",
+"worker-robots-speed-2",
+"worker-robots-speed-3",
+"worker-robots-speed-4",
+"worker-robots-speed-5",
+"worker-robots-speed-6",
+"worker-robots-storage-1",
+"worker-robots-storage-2",
+"worker-robots-storage-3",
+"construction-robotics",
+}
+
+for _, tech_name in pairs(technologies) do
+force.technologies[tech_name].researched = true
+end
+
+local technology_name = "worker-robots-speed-6"
+local start_level = 6
+for level = start_level, bots_speed_end_level do
+force.technologies[technology_name].level = level
+force.technologies[technology_name].researched = true
+end
+
+end
+
+
+
+
+
+--[[COMMENT: add text above spec island]]
+
+local texts = {
+"SPECIAL GAME - Fordeka’s personal bots ",
+"Free personal bots + armor MK2 + fast hand mining",
+"Researches unlocked: construction-bots, worker-robot-storage-3, worker-robots-speed-" .. bots_speed_end_level/2 .. "",
+"manual_mining_speed_modifier = 5000",
+"Sending some science MIGHT BE disabled - check science top left corner",
+"Game voted by players, have fun",
+"Please do not use any of the free items as walls/obstacles against bitters - it is forbidden (free miners, belts, wood, furnaces, etc.)",
+"Please do not reveal too much map bcs game will lag",
+"Please do not deconstruct entities created by other players",
+"Let's have good game with balanced teams",
+""
+}
+
+local position = {0, -30}
+local area = {{position[1] - 5, position[2] - 5}, {position[1] + 5, position[2] + 5}}
+local existing_chests = surface.find_entities_filtered{area = area, name = "wooden-chest"}
+
+if #existing_chests > 0 then
+game.print("special game text above island has been changed")
+existing_chests[1].destroy()
+else
+game.print("please read the rules above island")
+end
+
+local chest = surface.create_entity({name = "wooden-chest", position = {0, -35}})
+
+chest.destructible = false
+chest.minable_flag = false
+chest.rotatable = false
+chest.operable = false
+
+for i, text in ipairs(texts) do
+local color = i % 2 == 0 and {255, 255, 0} or {255, 200, 0}
+rendering.draw_text {
+text = text,
+surface = surface,
+target = { entity = chest, offset = {0, 2 * i} },
+color = color,
+scale = 2.00,
+font = "heading-1",
+alignment = "center",
+scale_with_zoom = false
+}
+end
+
+
+
+
+--[[COMMENT: put message in chat]]
+
+local message = ""
+
+local border = "[font=default-large-bold][color=red]+++++++++++++[/color][/font]"
+game.print(border)
+
+message2 = texts[1]
+message2 = "[font=default-large-bold][color=yellow]" .. message2 .. "[/color][/font]"
+game.print(message2)
+
+local message3 = "[font=default-large-bold][color=yellow]Please read description above island[/color][/font]"
+game.print(message3)
+
+local border2 = "[font=default-large-bold][color=red]++++++++++++[/color][/font]"
+game.print(border2)
