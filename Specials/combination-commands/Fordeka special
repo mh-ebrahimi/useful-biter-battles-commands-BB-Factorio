@@ -40,7 +40,7 @@ end
 
 
 
---[[COMMENT: add text above spec island]]
+--[[COMMENT: add chest with text above spec island]]
 
 local texts = {
 "SPECIAL GAME - Fordeka’s personal bots ",
