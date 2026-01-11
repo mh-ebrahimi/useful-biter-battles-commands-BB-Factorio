@@ -1,1 +1,3 @@
-/sc game.players['ebrahimi'].tag = "test"
+/sc 
+--[[COMENT: this tag is not visible to the player while playing but is visible in chat]]
+game.players['ebrahimi'].tag = "test"
