@@ -45,7 +45,7 @@ end
 local texts = {
 "SPECIAL GAME - Fordeka’s personal bots ",
 "Free personal bots + armor MK2 + fast hand mining",
-"Researches unlocked: construction-bots, worker-robot-storage-3, worker-robots-speed-" .. bots_speed_end_level/2 .. "",
+"Researches unlocked: construction-bots, worker-robot-storage-3, worker-robots-speed-" .. bots_speed_end_leve .. "",
 "manual_mining_speed_modifier = 5000",
 "Sending some science MIGHT BE disabled - check science top left corner",
 "Game voted by players, have fun",
