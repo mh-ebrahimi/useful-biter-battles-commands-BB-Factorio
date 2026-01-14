@@ -4,7 +4,7 @@
 COMMENT: to change the parameters below, edit the function call at the end of the file
 --]]
 
-function fordeka_special(bots_speed_end_level, manual_mining_speed_modifier_value)
+local function fordeka_special(bots_speed_end_level, manual_mining_speed_modifier_value)
     local surface = game.player.surface
     local technologies = {
         "worker-robots-speed-1",
