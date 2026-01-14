@@ -1,5 +1,5 @@
 /sc
-function bb_generate_infinity_chest(item_list)
+local function bb_generate_infinity_chest(item_list)
     --[[
     remove existing infinity chests 
     --]]
