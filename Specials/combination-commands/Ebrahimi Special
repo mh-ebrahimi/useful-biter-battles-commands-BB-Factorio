@@ -131,6 +131,7 @@ local item_list = {
     "power-armor-mk2",
     "battery-mk2-equipment",
     "exoskeleton-equipment",
+    "belt-immunity-equipment",
     "fission-reactor-equipment",
     "personal-roboport-mk2-equipment",
     "personal-laser-defense-equipment",
