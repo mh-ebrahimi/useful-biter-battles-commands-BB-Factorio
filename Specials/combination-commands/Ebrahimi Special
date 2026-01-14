@@ -1,0 +1,145 @@
+/sc
+local function ebrahimi_special(item_list)
+    --[[
+    remove existing infinity chests 
+    --]]
+    local surface = game.surfaces[storage.bb_surface_name]
+    local position_0 = { x = 0, y = -42 }
+    local area = {{position_0.x - 25, position_0.y - 5}, {position_0.x + 25, position_0.y - 2*position_0.y +5}}
+    local existing_infinity_chest = surface.find_entities_filtered({area = area, name = 'infinity-chest'})
+    if #existing_infinity_chest > 0 then
+        game.print("special game infinity chests have been changed")
+        for _, object in pairs(existing_infinity_chest) do
+            object.destroy()
+        end
+    else
+        game.print("special game infinity chests are being created")
+    end
+    --[[
+    generate new infinity chests
+    --]]
+    local gap = 0
+    local k = gap + 1
+    for i, v in ipairs(item_list) do
+        local chest = surface.create_entity({
+            name = 'infinity-chest',
+            position = position_0,
+            force = 'neutral',
+            fast_replace = true,
+        })
+        if chest == nil then
+            return
+        end
+        chest.minable = false
+        chest.operable = false
+        chest.destructible = false
+        chest.set_infinity_container_filter(i, { name = v, index = i, count = prototypes.item[v].stack_size })
+        chest.clone({ position = { position_0.x, -position_0.y } })
+        position_0.x = position_0.x + (i * k)
+        k = k * -1
+    end
+    --[[
+    unlock research and hand mining bonus
+    --]]
+    local bot_speed_end_level = 15
+    local manual_mining_speed_modifier_value = 10000
+    local technologies = {
+    "worker-robots-speed-1",
+    "worker-robots-speed-2",
+    "worker-robots-speed-3",
+    "worker-robots-speed-4",
+    "worker-robots-speed-5",
+    "worker-robots-speed-6",
+    "worker-robots-storage-1",
+    "worker-robots-storage-2",
+    "worker-robots-storage-3",
+    "construction-robotics",
+    }
+    for _, force_name in pairs({"north", "south"}) do
+        local force = game.forces[force_name]
+        force.manual_mining_speed_modifier = manual_mining_speed_modifier_value;
+        for _, tech_name in pairs(technologies) do
+        force.technologies[tech_name].researched = true
+        end
+        local technology_name = "worker-robots-speed-6"
+        local start_level = 6
+        for level = start_level, bot_speed_end_level do
+        force.technologies[technology_name].level = level
+        force.technologies[technology_name].researched = true
+        end
+    end
+    --[[
+    put massage in chat and on chest above spec island
+    --]]
+    local texts = {
+        "SPECIAL GAME - ebrahimi\'s special -",
+        "Free OP items + fast hand mining",
+        "Researches unlocked: construction-bots, worker-robots-speed-" .. bot_speed_end_level .. "",
+        "manual_mining_speed_modifier = " .. manual_mining_speed_modifier_value .. "",
+        "Please do not use any of the free items as walls/obstacles against bitters - it is forbidden",
+        "Please do not reveal too much map bcs game will lag",
+        "Please do not deconstruct entities created by other players",
+        "have fun!",
+        "",
+        }
+    local message = ""
+    local border = "[font=default-large-bold][color=red]+++++++++++++[/color][/font]"
+    game.print(border)
+    message2 = texts[1]
+    message2 = "[font=default-large-bold][color=yellow]" .. message2 .. "[/color][/font]"
+    game.print(message2)
+    local message3 = "[font=default-large-bold][color=yellow]Please read description above island[/color][/font]"
+    game.print(message3)
+    local border2 = "[font=default-large-bold][color=red]++++++++++++[/color][/font]"
+    game.print(border2)
+
+
+    local position = {0, -30}
+    local area = {{position[1] - 5, position[2] - 5}, {position[1] + 5, position[2] + 5}}
+    local existing_chests = surface.find_entities_filtered{area = area, name = "wooden-chest"}
+    if #existing_chests > 0 then
+        game.print("special game text above island has been changed")
+        existing_chests[1].destroy()
+    else
+        game.print("please read the rules above island")
+    end
+    
+    local chest = surface.create_entity({name = "wooden-chest", position = {0, -35}})
+
+    chest.destructible = false
+    chest.minable_flag = false
+    chest.rotatable = false
+    chest.operable = false
+
+    for i, text in ipairs(texts) do
+        local color = i % 2 == 0 and {255, 255, 0} or {255, 200, 0}
+        rendering.draw_text {
+        text = text,
+        surface = surface,
+        target = { entity = chest, offset = {0, 2 * i} },
+        color = color,
+        scale = 2.00,
+        font = "heading-1",
+        alignment = "center",
+        scale_with_zoom = false
+        }
+    end
+    
+end
+
+local item_list = {
+    "power-armor-mk2",
+    "battery-mk2-equipment",
+    "exoskeleton-equipment",
+    "fission-reactor-equipment",
+    "personal-roboport-mk2-equipment",
+    "personal-laser-defense-equipment",
+    "construction-robot",
+    "electric-mining-drill",
+    "express-splitter",
+    "express-underground-belt",
+    "express-transport-belt",
+    "speed-module-3",
+    }
+
+ebrahimi_special(item_list)
