@@ -1,11 +1,13 @@
 /sc
-function bb_generate_infinity_chest(item_list)
+function Carl3_special(item_list)
+
+
     --[[
     remove existing infinity chests 
     --]]
     local surface = game.surfaces[storage.bb_surface_name]
     local position_0 = { x = 0, y = -42 }
-    local area = {{position_0.x - 10, position_0.y - 5}, {position_0.x + 10, position_0.y + 5}}
+    local area = {{position_0.x - 10, position_0.y - 5}, {position_0.x + 10, position_0.y - 2*position_0.y +5}}
     local existing_infinity_chest = surface.find_entities_filtered({area = area, name = 'infinity-chest'})
     if #existing_infinity_chest > 0 then
         game.print("special game infinity chests have been changed")
@@ -109,7 +111,7 @@ function bb_generate_infinity_chest(item_list)
     
 end
 
-item_list = {
+local item_list = {
     "modular-armor",
     "battery-mk2-equipment",
     "exoskeleton-equipment",
@@ -117,4 +119,4 @@ item_list = {
     "firearm-magazine",
     }
 
-bb_generate_infinity_chest(item_list)
+Carl3_special(item_list)
