@@ -1,5 +1,5 @@
 /sc
-function Carl3_special(item_list)
+local function Carl3_special(item_list)
 
 
     --[[
