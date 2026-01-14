@@ -72,7 +72,7 @@ local function ebrahimi_special(item_list)
     put massage in chat and on chest above spec island
     --]]
     local texts = {
-        "SPECIAL GAME - ebrahimi\'s special -",
+        "SPECIAL GAME - Proof of concept -",
         "Free OP items + fast hand mining",
         "Researches unlocked: construction-bots, worker-robots-speed-" .. bot_speed_end_level .. "",
         "manual_mining_speed_modifier = " .. manual_mining_speed_modifier_value .. "",
