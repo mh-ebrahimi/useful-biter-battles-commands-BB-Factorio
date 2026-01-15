@@ -1,3 +1,5 @@
+--[[official factorio list for modifiers]]
+--[[https://lua-api.factorio.com/latest/types/Modifier.html]]
 
 --[[gun shooting speed modifier]]
 /c game.player.force.set_gun_speed_modifier("laser", 1000)
