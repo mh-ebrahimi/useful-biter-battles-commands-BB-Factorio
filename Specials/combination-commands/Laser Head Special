@@ -17,6 +17,7 @@ local function laser_head(damage_modifier, shooting_speed)
         "SPECIAL GAME - Laser Head -",
         "laser_speed_modifier = +" .. shooting_speed*100 .. "%",
         "laser_damage_modifier = " .. damage_modifier .. "",
+        "-- laser turret is disabled --",
         "Please do not deconstruct entities created by other players",
         "have fun!",
         "",
@@ -52,17 +53,26 @@ local function laser_head(damage_modifier, shooting_speed)
 
     for i, text in ipairs(texts) do
         local color = i % 2 == 0 and {255, 255, 0} or {255, 200, 0}
+        if i == 4 then
+            font = "infinite"
+            color = {255, 50, 0}
+        else 
+            font = "heading-1" 
+            color = i % 2 == 0 and {255, 255, 0} or {255, 200, 0}
+        end
         rendering.draw_text {
         text = text,
         surface = surface,
         target = { entity = chest, offset = {0, 2 * i} },
         color = color,
         scale = 2.00,
-        font = "heading-1",
+        font = font,
         alignment = "center",
         scale_with_zoom = false
         }
     end
+    font = ""
+    color = ""
 end
 
 
@@ -116,3 +126,4 @@ local item_list = {
 
 bb_generate_infinity_chest(item_list)
 laser_head(0,1)
+--[[disable laser-turret]]
