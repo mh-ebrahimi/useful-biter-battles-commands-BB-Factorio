@@ -99,4 +99,57 @@ local function fordeka_special(bots_speed_end_level, manual_mining_speed_modifie
     game.print(border2)
 end
 
+
+local function bb_generate_infinity_chest(item_list)
+    --[[
+    remove existing infinity chests 
+    --]]
+    local surface = game.surfaces[storage.bb_surface_name]
+    local position_0 = { x = 0, y = -42 }
+    local area = {{position_0.x - 20, position_0.y - 5}, {position_0.x + 20, position_0.y - 2*position_0.y +5}}
+    local existing_infinity_chest = surface.find_entities_filtered({area = area, name = 'infinity-chest'})
+    if #existing_infinity_chest > 0 then
+        game.print("special game infinity chests have been changed")
+        for _, object in pairs(existing_infinity_chest) do
+            object.destroy()
+        end
+    else
+        game.print("special game infinity chests are being created")
+    end
+    --[[
+    generate new infinity chests
+    --]]
+    local gap = 3
+    local k = gap + 1
+    for i, v in ipairs(item_list) do
+        local chest = surface.create_entity({
+            name = 'infinity-chest',
+            position = position_0,
+            force = 'neutral',
+            fast_replace = true,
+        })
+        if chest == nil then
+            return
+        end
+        chest.minable = false
+        chest.operable = false
+        chest.destructible = false
+        chest.set_infinity_container_filter(i, { name = v, index = i, count = prototypes.item[v].stack_size })
+        chest.clone({ position = { position_0.x, -position_0.y } })
+        position_0.x = position_0.x + (i * k)
+        k = k * -1
+    end
+end
+
+local item_list = {
+    "power-armor-mk2",
+    "battery-mk2-equipment",
+    "fission-reactor-equipment",
+    "exoskeleton-equipment",
+    "personal-roboport-mk2-equipment",
+    "construction-robot",
+    "electric-mining-drill",
+}
+
+bb_generate_infinity_chest(item_list)
 fordeka_special(12, 5000)
