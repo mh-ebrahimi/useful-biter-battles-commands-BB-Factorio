@@ -1,4 +1,7 @@
---- Biters accelerate their movement and attack speed based on current match time.
+/sc
+--[[
+Biters accelerate their movement and attack speed based on current match time.
+--]]
 if storage.cbs then
     game.print("Biters speed scaling is active already!")
     return
