@@ -53,7 +53,8 @@ local function Carl3_special(item_list)
     --[[
     give both teams -5k threat
     --]]
-    storage.bb_threat["north_biters"] = -5000 storage.bb_threat["south_biters"] = -5000
+    storage.bb_threat["north_biters"] = -5000 
+    storage.bb_threat["south_biters"] = -5000
     --[[
     put massage in chat and on chest above spec island
     --]]
