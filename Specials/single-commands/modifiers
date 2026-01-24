@@ -9,3 +9,5 @@
 
 --[[turret attack(damage) modifier]]
 /c game.forces['north'].set_turret_attack_modifier('laser-turret', 0.001)
+
+/sc game.forces["spectator"].character_running_speed_modifier = -0.8
