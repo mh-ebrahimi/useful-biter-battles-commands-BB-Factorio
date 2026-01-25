@@ -1,1 +1,1 @@
-/sc game.player.create_character("darkenade")
+/sc game.players["darkenade"].create_character() 
