@@ -1,0 +1,319 @@
+/sc
+if storage.special_game_active then
+	game.print("Special game is already running, don't panic it is ok unless it is not.", {color = {r=0.9,g=0,b=0}})
+	return
+end
+storage.special_game_active = true
+game.print("loading special game")
+local Event = require "utils.event"
+
+local on_tick_wide_main = 'function(event)
+    if game.tick % 5 ~= 0 then return end
+    if not storage.special_games_variables.x then
+        storage.special_games_variables.x = 32
+    end
+    local x = storage.special_games_variables.x
+    if not game.surfaces[storage.bb_surface_name].is_chunk_generated({x = -(3+math.abs(x)/32),y = -6}) or not game.surfaces[storage.bb_surface_name].is_chunk_generated({x= 3+math.abs(x)/32, y = 6})  then
+	    return
+    end
+    storage.special_games_variables.x = x + 1       
+    local surface = game.surfaces[storage.bb_surface_name] 
+    if x > 1700 then
+        game.forces.north.chart(surface, {{x = -2000, y = -150}, {x = 2000, y = 150}})
+        game.forces.south.chart(surface, {{x = -2000, y = -150}, {x = 2000, y = 150}})
+        game.forces.spectator.chart(surface, {{x = -2000, y = -150}, {x = 2000, y = 150}})
+        game.print("Generating wide main is finished.")
+        local Event = require "utils.event"  
+        Event.remove_removable_function(defines.events.on_tick, "on_tick_wide_main") 
+        return
+    end         
+    for y = 130, -130, -1 do
+        if y > 25 or y < -25 then
+            local position = {x = x, y = y}
+            local tile = surface.get_tile(position.x, y)
+            if tile.name ==  "water" or tile.name ==  "deepwater"  then
+                local entities = surface.find_entities_filtered{
+                    position = position,
+                    type = "fish" }
+                for _, entity in pairs(entities) do
+                    entity.destroy()
+                end            
+                surface.set_tiles{{name = "dry-dirt", position = position}}
+            end
+            local rn = math.random(2)
+            if y > -100-rn and y < 100+rn then
+                surface.set_tiles{{name = "refined-concrete", position = position}}
+            end
+        else
+            if y > 20 or y < -20 then
+                local position = {x = x, y = y}
+                local tile = surface.get_tile(position.x, y)
+                if tile.name ~=  "water" and tile.name ~=  "deepwater"  then
+                    surface.set_tiles{{name = "refined-concrete", position = position}}
+                end
+            end
+        end
+    end
+    for y = 130, -130, -1 do
+        if y > 25 or y < -25 then
+            local position = {x = x*-1, y = y}
+            local tile = surface.get_tile(position.x, y)
+            if tile.name ==  "water" or tile.name ==  "deepwater"  then
+                local entities = surface.find_entities_filtered{
+                    position = position,
+                    type = "fish" }
+                for _, entity in pairs(entities) do
+                    entity.destroy()
+                end            
+                surface.set_tiles{{name = "dry-dirt", position = position}}
+            end
+            local rn = math.random(2)
+            if y > -100-rn and y < 100+rn then
+                surface.set_tiles{{name = "refined-concrete", position = position}}
+            end
+        else
+            if y > 20 or y < -20 then
+                local position = {x = x*-1, y = y}
+                local tile = surface.get_tile(position.x, y)
+                if tile.name ~=  "water" and tile.name ~=  "deepwater"  then
+                    surface.set_tiles{{name = "refined-concrete", position = position}}
+                end
+            end
+        end
+    end
+    
+    if x % 100 ~= 0 or x < 199 then return end
+    
+    local ore_configuration = {
+    generation_area = {x-100, -120, x, -25},
+    
+    ["iron-ore"] = {
+        size = {min = 7, max = 15},
+        count = 2,
+        density = 3
+    },
+    
+    ["copper-ore"] = {
+        size = {min = 7, max = 15},
+        count = 1,
+        density = 3
+    },
+    
+    ["coal"] = {
+        size = {min = 9, max = 12},
+        count = 1,
+        density = 3
+    },
+    
+    ["stone"] = {
+        size = {min = 5, max = 10},
+        count = 1,
+        density = 3
+    }
+}
+    local generation_area = ore_configuration.generation_area
+    
+    local resources_a = surface.find_entities_filtered({
+        area = {{generation_area[1], generation_area[2]}, {generation_area[3], generation_area[2] * -1 }},
+        type = {"resource", "tree", "turret","container"}
+    })
+    if resources_a then
+        for _, res in pairs(resources_a) do
+            res.destroy()        
+        end
+    end
+
+    local resources_b = surface.find_entities_filtered({
+        area = {{(generation_area[1]*-1)-100, generation_area[2]}, {(generation_area[3]*-1)+100, generation_area[2] * -1 }},
+        type = {"resource", "tree", "turret","container"}
+    })
+    if resources_b then
+        for _, res in pairs(resources_b) do
+            res.destroy()        
+        end
+    end
+
+    local ore_types = {}
+    local total_patches = 0
+    
+    for ore_name, config in pairs(ore_configuration) do
+        if ore_name ~= "generation_area" then
+            table.insert(ore_types, {name = ore_name, config = config})
+            total_patches = total_patches + config.count
+        end
+    end
+    
+    local area_width = generation_area[3] - generation_area[1]
+    local area_height = generation_area[4] - generation_area[2]
+    
+    local grid_cols = math.ceil(math.sqrt(total_patches * area_width / area_height))
+    local grid_rows = math.ceil(total_patches / grid_cols)
+    
+    local cell_width = area_width / grid_cols
+    local cell_height = area_height / grid_rows
+    
+    local occupied_positions = {}
+    
+    local function is_overlapping(x, y, size)
+        for _, pos in ipairs(occupied_positions) do
+            local dist = math.sqrt((x - pos.x)^2 + (y - pos.y)^2)
+            if dist < (size + pos.size) then
+                return true
+            end
+        end
+        return false
+    end
+    
+    local all_cells = {}
+    for i = 0, total_patches - 1 do
+        table.insert(all_cells, i)
+    end
+    
+    for i = #all_cells, 2, -1 do
+        local j = math.random(i)
+        all_cells[i], all_cells[j] = all_cells[j], all_cells[i]
+    end
+    
+    local cell_index = 1
+    
+    for _, ore_data in ipairs(ore_types) do
+        local ore_name = ore_data.name
+        local config = ore_data.config
+        
+        for i = 1, config.count do
+            local placed = false
+            local attempts = 0
+            
+            while not placed and attempts < 100 do
+                attempts = attempts + 1
+                
+                local patch_index = all_cells[cell_index]
+                local grid_x = patch_index % grid_cols
+                local grid_y = math.floor(patch_index / grid_cols)
+                
+                local cell_left = generation_area[1] + grid_x * cell_width
+                local cell_top = generation_area[2] + grid_y * cell_height
+                
+                local size = math.random(config.size.min, config.size.max)
+                
+                local x = cell_left + size + math.random() * (cell_width - 2 * size)
+                local y = cell_top + size + math.random() * (cell_height - 2 * size)
+                
+                if not is_overlapping(x, y, size) then
+                    local tiles = {}
+                    local noise_seed = math.random() * 1000
+                    
+                    for dx = -size, size do
+                        for dy = -size, size do
+                            local dist = math.sqrt(dx * dx + dy * dy)
+                            
+                            local angle = math.atan2(dy, dx)
+                            local noise = math.sin(angle * 5 + noise_seed) * 0.15 + 
+                                         math.cos(angle * 3 + noise_seed * 1.3) * 0.15
+                            local irregular_radius = size * (1 + noise)
+                            
+                            if dist <= irregular_radius then
+                                local tile_x = math.floor(x + dx)
+                                local tile_y = math.floor(y + dy)
+                                
+                                if tile_x >= generation_area[1] and tile_x <= generation_area[3] and
+                                   tile_y >= generation_area[2] and tile_y <= generation_area[4] then
+                                    local base_amount = 1000
+                                    local amount = base_amount * config.density
+                                    
+                                    table.insert(tiles, {
+                                        name = ore_name,
+                                        position = {tile_x, tile_y},
+                                        amount = math.floor(amount)
+                                    })
+                                end
+                            end
+                        end
+                    end
+                    
+                    if #tiles > 0 then
+                        for j = 1, #tiles do
+                            surface.create_entity({
+                                name = tiles[j].name,
+                                position = tiles[j].position,
+                                amount = tiles[j].amount
+                            })
+                            surface.create_entity({
+                                name = tiles[j].name,
+                                position = {tiles[j].position[1], tiles[j].position[2]*-1},
+                                amount = tiles[j].amount
+                            })
+                            surface.create_entity({
+                                name = tiles[j].name,
+                                position = {tiles[j].position[1]*-1, tiles[j].position[2]},
+                                amount = tiles[j].amount
+                            })
+                            surface.create_entity({
+                                name = tiles[j].name,
+                                position = {tiles[j].position[1]*-1, tiles[j].position[2]*-1},
+                                amount = tiles[j].amount
+                            })
+                        end
+                        
+                        table.insert(occupied_positions, {x = x, y = y, size = size})
+                        placed = true
+                        cell_index = cell_index + 1
+                    end
+                end
+                
+                if not placed and attempts % 20 == 0 then
+                    cell_index = cell_index + 1
+                    if cell_index > #all_cells then
+                        cell_index = 1
+                    end
+                end
+            end
+        end
+    end
+end'
+
+local on_surface_deleted_wide_main ='function(event)
+    if not storage.special_game_active then return end
+    local Event = require "utils.event"  
+    Event.remove_removable_function(defines.events.on_tick, "on_tick_wide_main") 
+    Event.remove_removable_function(defines.events.on_surface_deleted, "on_surface_deleted_wide_main")
+    storage.special_game_active = nil
+    game.print("Special game removed")
+end'
+
+Event.add_removable_function(defines.events.on_tick, on_tick_wide_main, "on_tick_wide_main")
+Event.add_removable_function(defines.events.on_surface_deleted, on_surface_deleted_wide_main, "on_surface_deleted_wide_main")
+
+local texts = {
+    "Special game: wide main",
+    "",
+    "",
+    "",
+    "",
+    "",
+}
+
+local chest = game.player.surface.create_entity({name = "wooden-chest", position = {0, -30}})
+
+if chest then
+    chest.minable = false
+    chest.destructible = false
+    chest.operable = false
+end
+
+for i, text in ipairs(texts) do
+    local color = i % 2 == 0 and {255, 255, 0} or {255, 200, 0}
+    rendering.draw_text {
+        text = text,
+        surface = game.player.surface,
+        target =  {entity = chest, offset = {0, 2 * i}},
+        color = color,
+        scale = 1.00,
+        font = "heading-1",
+        alignment = "center",
+        scale_with_zoom = true,        
+        use_rich_text = true,
+    }
+end
+
+game.print("Special game loaded. Read message on island for more details.")
