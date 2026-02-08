@@ -1,0 +1,121 @@
+/sc
+
+storage.bb_threat["north_biters"] = -10000
+storage.bb_threat["south_biters"] = -10000
+
+for _, force in pairs({"north", "south"}) do
+    game.forces[force].manual_mining_speed_modifier=1000
+end
+
+
+for _, force in pairs({"north", "south"}) do
+    game.forces[force].technologies['construction-robotics'].researched=true 
+    game.forces[force].technologies['logistic-robotics'].researched=true
+    game.forces[force].technologies['logistic-system'].researched=true
+
+	i=6
+--[[COMMENT: change(x) in i<x bellow to get to the desired level of infinite research]]
+	while i<15 do
+		game.forces[force].technologies['worker-robots-speed-6'].researched=true 
+		i=i+1
+        game.print("Special game [worker robot speed " .. i .. "]", {color = {r=0.3,g=1,b=0.1}})
+	end
+end
+
+local function bb_generate_infinity_chest(item_list)
+    --[[
+    remove existing infinity chests 
+    --]]
+    local surface = game.surfaces[storage.bb_surface_name]
+    local position_0 = { x = 0, y = -42 }
+    local area = {{position_0.x - 20, position_0.y - 5}, {position_0.x + 20, position_0.y - 2*position_0.y +5}}
+    local existing_infinity_chest = surface.find_entities_filtered({area = area, name = 'infinity-chest'})
+    if #existing_infinity_chest > 0 then
+        game.print("special game infinity chests have been changed")
+        for _, object in pairs(existing_infinity_chest) do
+            object.destroy()
+        end
+    else
+        game.print("special game infinity chests are being created")
+    end
+    --[[
+    generate new infinity chests
+    --]]
+    local gap = 2
+    local k = gap + 1
+    for i, v in ipairs(item_list) do
+        local chest = surface.create_entity({
+            name = 'infinity-chest',
+            position = position_0,
+            force = 'neutral',
+            fast_replace = true,
+        })
+        if chest == nil then
+            return
+        end
+        chest.minable = false
+        chest.operable = false
+        chest.destructible = false
+        chest.set_infinity_container_filter(i, { name = v, index = i, count = prototypes.item[v].stack_size })
+        chest.clone({ position = { position_0.x, -position_0.y } })
+        position_0.x = position_0.x + (i * k)
+        k = k * -1
+    end
+end
+
+local item_list = {
+    'roboport',
+    'construction-robot',
+    'logistic-robot',
+    'passive-provider-chest',
+    'storage-chest',
+    'buffer-chest',
+    'requester-chest',
+    'nuclear-fuel',
+}
+
+bb_generate_infinity_chest(item_list)
+
+
+--[[
+COMMENT: add chest with text above spec island
+--]]
+local surface = game.player.surface
+
+local texts = {
+    "SPECIAL GAME - Logi mAdNeSs",
+    "by ebrahimi",
+    }
+local position = {0, -30}
+local area = {{position[1] - 5, position[2] - 5}, {position[1] + 5, position[2] + 5}}
+local existing_chests = surface.find_entities_filtered{area = area, name = "wooden-chest"}
+if #existing_chests > 0 then
+    game.print("special game text above island has been changed")
+    existing_chests[1].destroy()
+end
+
+local chest = surface.create_entity({name = "wooden-chest", position = {0, -30}})
+
+chest.destructible = false
+chest.minable_flag = false
+chest.rotatable = false
+chest.operable = false
+
+
+for i, text in ipairs(texts) do
+    local color = i % 2 == 0 and {255, 255, 0} or {255, 200, 0}
+    rendering.draw_text {
+    text = text,
+    surface = surface,
+    target = { entity = chest, offset = {0, 2 * i} },
+    color = color,
+    scale = 2.00,
+    font = "heading-1",
+    alignment = "center",
+    scale_with_zoom = false
+    }
+end
+
+
+
+
