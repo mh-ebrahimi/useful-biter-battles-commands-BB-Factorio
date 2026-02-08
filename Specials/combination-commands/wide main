@@ -316,4 +316,5 @@ for i, text in ipairs(texts) do
     }
 end
 
+
 game.print("Special game loaded. Read message on island for more details.")
