@@ -5,6 +5,7 @@ storage.bb_threat["south_biters"] = -10000
 local hand_mining_speed = 1000
 for _, force in pairs({"north", "south"}) do
     game.forces[force].manual_mining_speed_modifier= hand_mining_speed
+	game.forces[force].worker_robots_storage_bonus=9
 end
 
 
