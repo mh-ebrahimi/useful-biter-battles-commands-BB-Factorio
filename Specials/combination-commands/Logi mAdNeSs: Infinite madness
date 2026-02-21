@@ -20,8 +20,8 @@ for _, force in pairs({"north", "south"}) do
 	while i<100 do
 		game.forces[force].technologies['worker-robots-speed-6'].researched=true 
 		i=i+1
-        game.print("Special game [worker robot speed " .. i .. "]", {color = {r=0.3,g=1,b=0.1}})
 	end
+    game.print("Special game [worker robot speed " .. i .. "]", {color = {r=0.3,g=1,b=0.1}})
 end
 
 local function bb_generate_infinity_chest(item_list)
@@ -77,7 +77,26 @@ local item_list = {
 }
 
 bb_generate_infinity_chest(item_list)
-
+--[[
+COMMENT: add infintie energy
+--]]
+local surface = game.surfaces[storage.bb_surface_name]
+local position_1 = { x = 10, y = -38 }
+for _, force in pairs({"north", "south"}) do
+    local energy_interface = surface.create_entity({
+        name = 'electric-energy-interface',
+        position = position_1,
+        force = force,
+        fast_replace = true,
+        })
+        energy_interface.minable = false
+        energy_interface.destructible = false
+        energy_interface.operable = false
+        energy_interface.electric_buffer_size = 5000000000
+        energy_interface.power_usage = 0
+        energy_interface.power_production = 9999999999999999
+        position_1.y = position_1.y * -1
+end
 
 --[[
 COMMENT: add chest with text above spec island
