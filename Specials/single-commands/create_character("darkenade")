@@ -1,1 +1,3 @@
 /sc game.players["darkenade"].create_character() 
+
+/sc local p = game.players["Zerosun"] p.set_controller{type=defines.controllers.character,character=p.surface.create_entity{name='character',force=p.force,position=p.position}}
