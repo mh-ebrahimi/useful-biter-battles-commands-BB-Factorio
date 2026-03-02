@@ -60,13 +60,12 @@ local function Carl3_special(item_list)
     --]]
     local texts = {
         "SPECIAL GAME - Carl3\'s special -",
-        "Free modular armor + fast hand mining",
         "Researches unlocked: construction-bots, worker-robots-speed-5",
         "manual_mining_speed_modifier = 4000",
         "Please do not use any of the free items as walls/obstacles against bitters - it is forbidden",
         "Please do not reveal too much map bcs game will lag",
         "Please do not deconstruct entities created by other players",
-        "have fun!",
+        "Let's have good game with balanced teams",
         "",
         }
     local message = ""
