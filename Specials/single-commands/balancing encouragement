@@ -1,0 +1,15 @@
+/sc
+local gui = require('utils.gui')
+for _, p in pairs(game.players) do
+    local join_random_button = gui.get_left_element(p, 'bb_main_gui')['flow']['inner_frame']['scroll_pane']['join_frame']['assign']['join_random']
+    join_random_button.style.width = 35
+    join_random_button.style.height = 35
+end
+
+for i, name in pairs({'join_north', 'join_south'}) do
+    for _, p in pairs(game.players) do
+        local join_button = gui.get_left_element(p, 'bb_main_gui')['flow']['inner_frame']['scroll_pane']['join_frame']['assign'][name]
+        join_button.style.width = 0
+        join_button.style.height = 0
+    end
+end
