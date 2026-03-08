@@ -1,0 +1,154 @@
+/sc 
+--[[
+unlock all techs and remove unwanted techs
+--]]
+for _, force in pairs({"north", "south"}) do
+    game.forces[force].manual_mining_speed_modifier=4
+    game.forces[force].research_all_technologies()
+    game.forces[force].technologies['artillery'].researched=false
+    game.forces[force].technologies['atomic-bomb'].researched=false
+    game.forces[force].technologies['land-mine'].researched=false
+    game.forces[force].technologies['cliff-explosives'].researched=false
+
+    game.forces[force].technologies["worker-robots-speed-3"].researched=false
+    game.forces[force].technologies["worker-robots-speed-4"].researched=false
+    game.forces[force].technologies["worker-robots-speed-5"].researched=false
+    game.forces[force].technologies["worker-robots-speed-6"].researched=false
+
+    game.forces[force].technologies["worker-robots-storage-1"].researched=false
+    game.forces[force].technologies["worker-robots-storage-2"].researched=false
+    game.forces[force].technologies["worker-robots-storage-3"].researched=false
+
+    game.forces[force].technologies["mining-productivity-3"].researched=false
+    game.forces[force].technologies["mining-productivity-4"].researched=false
+
+    game.forces[force].technologies["stronger-explosives-3"].researched=false
+    game.forces[force].technologies["stronger-explosives-4"].researched=false
+    game.forces[force].technologies["stronger-explosives-5"].researched=false
+    game.forces[force].technologies["stronger-explosives-6"].researched=false
+    game.forces[force].technologies["stronger-explosives-7"].researched=false
+
+    game.forces[force].technologies["inserter-capacity-bonus-3"].researched=false
+    game.forces[force].technologies["inserter-capacity-bonus-4"].researched=false
+    game.forces[force].technologies["inserter-capacity-bonus-5"].researched=false
+    game.forces[force].technologies["inserter-capacity-bonus-6"].researched=false
+    game.forces[force].technologies["inserter-capacity-bonus-7"].researched=false
+
+    game.forces[force].technologies["refined-flammables-3"].researched=false
+    game.forces[force].technologies["refined-flammables-4"].researched=false
+    game.forces[force].technologies["refined-flammables-5"].researched=false
+    game.forces[force].technologies["refined-flammables-6"].researched=false
+
+    game.forces[force].technologies["follower-robot-count-3"].researched=false
+    game.forces[force].technologies["follower-robot-count-4"].researched=false
+
+    game.forces[force].technologies["physical-projectile-damage-5"].researched=false
+    game.forces[force].technologies["physical-projectile-damage-6"].researched=false
+    game.forces[force].technologies["weapon-shooting-speed-5"].researched=false
+    game.forces[force].technologies["weapon-shooting-speed-6"].researched=false
+end
+
+local Color = require('utils.color_presets')
+local function generate_disabled_research(team, eq)
+    if not storage.special_games_variables['disabled_research'] then
+        storage.special_games_variables['disabled_research'] = { ['north'] = {}, ['south'] = {} }
+    end
+    storage.active_special_games['disabled_research'] = true
+    local tab = {
+        ['left'] = 'north',
+        ['right'] = 'south',
+    }
+    if tab[team] then
+        for k, v in pairs(eq) do
+            table.insert(storage.special_games_variables['disabled_research'][tab[team]], v)
+            game.forces[tab[team]].technologies[v].enabled = false
+        end
+        game.print(
+            'Special game Disabled research: '
+                .. table.concat(eq, ', ')
+                .. ' for team '
+                .. tab[team]
+                .. ' is being generated!',
+            { color = Color.warning }
+        )
+        return
+    end
+
+    for k, v in pairs(eq) do
+        table.insert(storage.special_games_variables['disabled_research']['south'], v)
+        table.insert(storage.special_games_variables['disabled_research']['north'], v)
+        game.forces['north'].technologies[v].enabled = false
+        game.forces['south'].technologies[v].enabled = false
+    end
+    game.print(
+        'Special game Disabled research: ' .. table.concat(eq, ', ') .. ' for both teams is being generated!',
+        { color = Color.warning }
+    )
+end
+team={ ['north'] = {}, ['south'] = {} }
+eq= {
+    'land-mine',
+    'cliff-explosives',
+    'artillery',
+    'atomic-bomb',
+}
+generate_disabled_research(team, eq)
+
+--[[
+add infinity pipe of crude oil
+--]]
+local surface = game.surfaces[storage.bb_surface_name]
+local position_0 = { x = 0, y = -42 }
+local area = {{position_0.x - 20, position_0.y - 5}, {position_0.x + 20, position_0.y - 2*position_0.y +5}}
+local existing_infinity_chest = surface.find_entities_filtered({area = area, name = 'infinity-chest'})
+
+
+local pipe = surface.create_entity({
+    name = 'infinity-pipe',
+    position = position_0,
+    force = 'neutral',
+    fast_replace = true,
+})
+if pipe == nil then
+    return
+end
+pipe.minable = false
+pipe.operable = false
+pipe.destructible = false
+pipe.set_infinity_pipe_filter({name = 'crude-oil', percentage = 1})
+pipe.clone({ position = { position_0.x, -position_0.y } })
+
+--[[
+add text above the island
+--]]
+
+local surface = game.player.surface
+local texts = {
+    "The Jimmy50 Special game: ",
+    "Tech unlocked + free crude oil",
+}
+local position = {0, -30}
+local area = {{position[1] - 5, position[2] - 5}, {position[1] + 5, position[2] + 5}}
+local existing_chests = surface.find_entities_filtered{area = area, name = "wooden-chest"}
+if #existing_chests > 0 then
+    game.print("special game text above island has been changed")
+    existing_chests[1].destroy()
+end
+local chest = surface.create_entity({name = "wooden-chest", position = {0, -28}})
+chest.destructible = false
+chest.minable_flag = false
+chest.rotatable = false
+chest.operable = false
+for i, text in ipairs(texts) do
+    local color = i % 2 == 0 and {255, 255, 0} or {255, 200, 0}
+    rendering.draw_text {
+    text = text,
+    surface = surface,
+    target = { entity = chest, offset = {0, 2 * i} },
+    color = color,
+    scale = 3.00,
+    font = "heading-1",
+    alignment = "center",
+    scale_with_zoom = false
+    }
+end
