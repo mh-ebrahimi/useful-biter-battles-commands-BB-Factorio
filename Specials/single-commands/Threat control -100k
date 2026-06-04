@@ -1,1 +1,2 @@
 /sc storage.bb_threat["north_biters"] = -100000 storage.bb_threat["south_biters"] = -100000
+/sc storage.bb_evolution["north_biters"] = 1 storage.bb_evolution["south_biters"] = 1
